@@ -208,8 +208,8 @@ Commands:
     Example rolls:
     - !roll d20
     - !roll 3d6
-    - !roll d20 > 12
-    - !roll 2d20 + 2 >> 12
+    - !roll d20 + 5 > 12
+    - !roll 2d20 >> 12
     - !roll d20 - 2 + 3 * 5 >> 15 (* modifier rolls (d20 - 2 + 3) 5 times)
     NOTE: >> cannot take more than one die. Use * to remedy this.
     !flip - flips a coin
