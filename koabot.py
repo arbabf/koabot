@@ -2,10 +2,10 @@
 # Author: arbabf
 
 import os
-import discord
 import string
 import random
 import asyncio
+import sqlite3
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -17,52 +17,43 @@ bot.remove_command("help")
 
 class rollStuff(commands.Cog):
     def success(self, dice, mods, thresh) -> str:
+        # Determines whether a roll succeeded.
         ret_str = ""
         for i in range(mods[2]):
+            roll_str = ""
             arr = self.roll(dice, mods)
-            roll_str = str(arr[1][0])
-            for elem in arr[1][1:]:
-                roll_str = "".join([roll_str, ", " + str(elem)])
-            if arr[0] > thresh:
-                if i == 0:
-                    ret_str = "".join([ret_str, ("succeeded. Threshold was {0}; roll was {1}. [{2}, total modifier {3}].").format(str(thresh), arr[0], roll_str, str(mods[1]))])
-                else:
-                    ret_str = "".join([ret_str, ("\n Roll {0} has succeeded. Threshold was {1}; roll was {2}. [{3}, total modifier {4}].").format(str(i+1), str(thresh), arr[0], roll_str, str(mods[1]))])
-            else:
-                if i == 0:
-                    ret_str = "".join([ret_str, ("failed. Threshold was {0}; roll was {1}. [{2}, total modifier {3}].").format(str(thresh), arr[0], roll_str, str(mods[1]))])
-                else:
-                    ret_str = "".join([ret_str, ("\n Roll {0} has failed. Threshold was {1}; roll was {2}. [{3}, total modifier {4}].").format(str(i+1), str(thresh), arr[0], roll_str, str(mods[1]))])
+            for j in range(len(arr[1])):
+                roll_str = "".join([roll_str, ["", ", "][int(j>0)] + str(arr[1][j])])
+            # This is better than using if statements, trust me. Changes up the return string based on what multiplier number it's on, whether it succeeded, etc.
+            ret_str = "".join([ret_str, ("{0}{1}. Threshold was {2}; roll was {3}. [{4}, total modifier {5}].").format(["", "\nRoll {0} has ".format(str(i+1))][int(i>0)], ["failed", "succeeded"][int(arr[0] > thresh)], str(thresh), arr[0], roll_str, str(mods[1]))])
         return ret_str
 
     def count_successes(self, dice, mods, thresh) -> str:
+        # Counts the number of successes.
         ret_str = ""
         for i in range(mods[2]):
+            roll_str = ""
             succ_rolls = 0
             arr = self.roll(dice, mods)
             for elem in arr[1]:
                 if elem + mods[1] > thresh:
                     succ_rolls += 1
-            roll_str = str(arr[1][0])
-            for elem in arr[1][1:]:
-                roll_str = "".join([roll_str, ", " + str(elem)])
-            if i == 0:
-                ret_str = "".join([ret_str, ("succeeded {0} times. Threshold was {1}. [{2}, total modifier {3}].").format(str(succ_rolls), str(thresh), roll_str, str(mods[1]))])
-            else:
-                ret_str = "".join([ret_str, ("\nAttempt {0} succeeded {1} times. Threshold was {2}. [{3}, total modifier {4}].").format(str(i+1), str(succ_rolls), str(thresh), roll_str, str(mods[1]))])
+            for j in range(len(arr[1])):
+                roll_str = "".join([roll_str, ["", ", "][int(j>0)] + str(arr[1][j])])
+            # See success().
+            ret_str = "".join([ret_str, ("{0}succeeded {1} time{2}. Threshold was {3}. [{4}, total modifier {5}].").format(["", "\nAttempt {0} ".format(str(i+1))][int(i>0)], str(succ_rolls), ["", "s"][int(succ_rolls!=1)], str(thresh), roll_str, str(mods[1]))])
         return ret_str
 
     def single_roll(self, dice, mods, thresh) -> str:
+        # Singular roll.
         ret_str = ""
         for i in range(mods[2]):
+            roll_str = ""
             arr = self.roll(dice, mods)
-            roll_str = str(arr[1][0])
-            for elem in arr[1][1:]:
-                roll_str = "".join([roll_str, ", " + str(elem)])
-            if i == 0:
-                ret_str = "".join("rolled {0}. [{1}, total modifier {2}].").format(arr[0], roll_str, str(mods[1]))
-            else:
-                ret_str = "".join([ret_str, ("\nAlso rolled {0}. [{1}, total modifier {2}].").format(arr[0], roll_str, str(mods[1]))])
+            for j in range(len(arr[1])):
+                roll_str = "".join([roll_str, ["", ", "][int(j>0)] + str(arr[1][j])])
+            #See success().
+            ret_str = "".join([ret_str, "{0}rolled {1}. [{2}, total modifier {3}]."]).format(["", "\nAlso "][int(i>0)],arr[0], roll_str, str(mods[1]))
         return ret_str
     
     def roll(self, dice, mods) -> list:
