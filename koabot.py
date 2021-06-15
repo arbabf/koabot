@@ -5,7 +5,6 @@ import os
 import string
 import random
 import asyncio
-import sqlite3
 from discord.ext import commands
 from dotenv import load_dotenv
 
