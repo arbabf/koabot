@@ -204,24 +204,7 @@ Commands:
     - !roll 2d20 >> 12
     - !roll d20 - 2 + 3 * 5 >> 15 (* modifier rolls (d20 - 2 + 3) 5 times)
     NOTE: >> cannot take more than one die. Use * to remedy this.
-    !flip - flips a coin
-    !pref - change command prefix```""")
+    !flip - flips a coin```""")
 
-@bot.command(name='pref')
-async def pref(ctx):
-    if ctx.message.author.guild_permissions.administrator:
-        await ctx.send("Type in the prefix you would like (max 10 characters):")
-        def check(msg):
-            if len(msg.content) <= 10 and msg.author == ctx.message.author:
-                return msg
-        try:
-            new_pref = await bot.wait_for("message", check=check, timeout=60.0)
-        except asyncio.TimeoutError:
-            await ctx.send("Taken too long to set a prefix!")
-        else:
-            await ctx.send("New prefix set to {0}.".format(new_pref.content))
-            bot.command_prefix = new_pref.content
-    else:
-        await ctx.send("Only a user with administrator permissions can perform this command.")
 bot.add_cog(rollStuff(bot))
 bot.run(TOKEN)
