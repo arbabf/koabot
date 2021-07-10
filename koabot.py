@@ -92,37 +92,6 @@ class rollStuff(commands.Cog):
         # error messages
         if dice == 0:
             return (-1, None, None)
-        comp_count = 0
-        comp_index = 0
-        last_comp = len(arg_string)
-        comp = ''
-        has_equals = False
-        for char in arg_string:
-            # count gt symbols
-            if comp == '' and (char == '>' or char == '<'):
-                comp = char
-                last_comp = comp_index
-                comp_count += 1
-            elif comp != '' and comp == char:
-                last_comp = comp_index
-                comp_count += 1
-            elif comp != char and comp != '' and char not in string.digits and char != '=':
-                return (-1, None, None)
-            comp_index += 1
-        if last_comp + 1 < len(arg_string) and arg_string[last_comp+1] == '=':
-            has_equals = True
-            indice = last_comp + 2 # skip the equals
-        else:
-            indice = last_comp + 1
-        thresh = 0
-        while indice < len(arg_string) and arg_string[indice] in string.digits:
-            # get threshold for gt
-            thresh = thresh * 10 + int(arg_string[indice])
-            indice += 1
-        if indice < len(arg_string) and arg_string[indice] not in string.digits:
-            return (-1, None, None)
-        if (comp_count >= 3):
-            return (-1, None, None)
         count = 1
         indice = initial_indice-1
         count_string = ''
@@ -179,6 +148,37 @@ class rollStuff(commands.Cog):
                 # error checking
                 return(-1, None, None)
             mult_count = num
+        comp_count = 0
+        last_comp = len(arg_string)
+        comp = ''
+        has_equals = False
+        while indice != len(arg_string) and arg_string[indice] in ['>', '<']:
+            char = arg_string[indice]
+            # count gt symbols
+            if comp == '' and (char == '>' or char == '<'):
+                comp = char
+                last_comp = indice
+                comp_count += 1
+            elif comp != '' and comp == char:
+                last_comp = indice
+                comp_count += 1
+            elif comp != char and comp != '' and char not in string.digits and char != '=':
+                return (-1, None, None)
+            indice += 1
+        if last_comp + 1 < len(arg_string) and arg_string[last_comp+1] == '=':
+            has_equals = True
+            indice = last_comp + 2 # skip the equals
+        else:
+            indice = last_comp + 1
+        thresh = 0
+        while indice < len(arg_string) and arg_string[indice] in string.digits:
+            # get threshold for gt
+            thresh = thresh * 10 + int(arg_string[indice])
+            indice += 1
+        if indice < len(arg_string) and arg_string[indice] not in string.digits:
+            return (-1, None, None)
+        if (comp_count >= 3):
+            return (-1, None, None)
         return (count, total, mult_count, plus_minus_mods, comp_count, dice, thresh, comp, has_equals)
 
 
@@ -221,7 +221,7 @@ Commands:
     - !roll d20 - 3 < 8
     - !roll 2d20 >>= 12
     - !roll d20 - 2 + 3 * 5 <<= 15 (* modifier rolls (d20 - 2 + 3) 5 times)
-    NOTE: >> or << cannot take more than one die if there exists a +- modifier. Use * to remedy this.
+    NOTE: >> and << cannot take more than one die if there exists a +- modifier. Use * to remedy this.
     !flip - flips a coin```""")
 
 bot.add_cog(rollStuff(bot))
