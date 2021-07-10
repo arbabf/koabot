@@ -8,7 +8,7 @@ Commands:
     !help - brings up this help text  
     !roll - rolls dice.  
 	Parameters: [optional number of dice] d [number of faces] [optional +- modifiers] [optional repetition modifier]  
-    Optional: Use > to sum up each individual dice roll, or >> to count successes.  
+    Optional: Use > and < to sum up each individual dice roll, or >> and << to count successes use r and f to reroll or drop the lowest rolls - you can specify how many rolls to reroll/drop. Default is one.  
     Example rolls:  
       - !roll d20  
       - !roll 3d6  
