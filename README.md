@@ -16,5 +16,7 @@ Commands:
       - !roll d20 - 3 < 8  
       - !roll 2d20 >>= 12  
       - !roll d20 - 2 + 3 * 5 <<= 15 (* modifier rolls (d20 - 2 + 3) 5 times)  
+      - !roll 3d20 + 3f (rolls 3d20+3, drops the lowest roll)  
+      - !roll 5d20 + 3 * 2r3 (rolls 5d20 + 3 twice, and rerolls the three lowest rolls of each)  
     NOTE: >> and << cannot take more than one die if there exists a +- modifier. Use * to remedy this.  
     !flip - flips a coin  
