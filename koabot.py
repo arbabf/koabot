@@ -112,7 +112,7 @@ class rollStuff(commands.Cog):
                 count = int(count_string)
         except Exception:
             return (-1, None, None)
-        indice = arg_string.find('d')+1
+        indice = initial_indice+1
         while indice != len(arg_string) and arg_string[indice] in string.digits:
             indice += 1 #stupid workaround, fix later
         while indice != len(arg_string) and arg_string[indice] != '*':
