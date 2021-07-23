@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  koabot: 
+    image: deafmute/koabot:latest 
+    restart: unless-stopped 
