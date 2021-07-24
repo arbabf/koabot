@@ -16,7 +16,7 @@ jobs:
       - name: 'Build:dockerimage'
         uses: docker/build-push-action@v2
         with:
-          registry: github.com
+          registry: ghcr.io
           username: "arbabf"
           password: ${{ secrets.TOKEN }}
           repository: arbabf/koabot
