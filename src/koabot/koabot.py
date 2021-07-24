@@ -7,10 +7,10 @@ import random
 import asyncio
 from discord.ext import commands
 from dotenv import load_dotenv
-from keep_alive import keep_alive
+#from keep_alive import keep_alive
 
-keep_alive()
 load_dotenv()
+#keep_alive()
 TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='!')
 bot.remove_command("help")
@@ -102,7 +102,7 @@ class rollStuff(commands.Cog):
         if indice == 0:
             return failure
         dice = 0
-        while (indice != len(arg_string) and arg_string[indice] in string.digits):
+        while indice != len(arg_string) and str.isnumeric(arg_string[indice]):
             dice = concat_num(dice) 
             indice += 1
         # error messages
@@ -118,18 +118,12 @@ class rollStuff(commands.Cog):
             count_char += count_string
             count_string = count_char
             indice -= 1
-        try:
-            # catch bad counts
-            if (count_string == ''):
-                pass
-            elif(int(count_string) <= 0):
-                raise Exception
-            else:
-                count = int(count_string)
-        except Exception:
+        if count_string != '' and (not str.isnumeric(count_string) or int(count_string) <= 0):
             return failure
+        elif count_string != '':
+            count = int(count_string)
         indice = initial_indice+1
-        while indice != len(arg_string) and arg_string[indice] in string.digits:
+        while indice != len(arg_string) and str.isnumeric(arg_string[indice]):
             indice += 1 #stupid workaround, fix later
         while indice != len(arg_string) and arg_string[indice] != '*':
             # look for every +/- modifier
@@ -137,15 +131,15 @@ class rollStuff(commands.Cog):
                 num = 0
                 indice += 1
                 old_index = indice-1
-                while indice != len(arg_string) and arg_string[indice] in string.digits:
+                while indice != len(arg_string) and str.isnumeric(arg_string[indice]):
                     num = concat_num(num)
                     indice += 1
-                if indice != len(arg_string) and arg_string[indice] not in string.digits and not (arg_string[indice] in ['+', '-', '*', '>', '<', 'r', 'f']):
+                if indice != len(arg_string) and not str.isnumeric(arg_string[indice]) and not arg_string[indice] in '+-*<>rf':
                     # error checking - if we have a non-numeric char or an operand just immediately terminate
                     return failure
                 plus_minus_mods.append(num)
                 plus_minus_mods[len(plus_minus_mods)-1] += 2 * plus_minus_mods[len(plus_minus_mods)-1] * (int(arg_string[old_index] == '+') - 1) # oneliner to negate number if -, but do nothing if +
-            elif arg_string[indice] in ['>', '<', 'r', 'f']:
+            elif arg_string[indice] in '<>rf':
                 break
             else:
                 return failure
@@ -157,10 +151,10 @@ class rollStuff(commands.Cog):
             # look for how many times we should repeat this roll
             indice += 1
             num = 0
-            while indice != len(arg_string) and arg_string[indice] in string.digits:
+            while indice != len(arg_string) and str.isnumeric(arg_string[indice]):
                 num = concat_num(num)
                 indice += 1
-            if indice != len(arg_string) and arg_string[indice] not in string.digits and not arg_string[indice] in ['>', '<', 'r', 'f']:
+            if indice != len(arg_string) and not str.isnumeric(arg_string[indice]) and not arg_string[indice] in '<>rf':
                 # error checking
                 return failure
             mult_count = num
@@ -173,7 +167,7 @@ class rollStuff(commands.Cog):
             elif arg_string[indice] == 'f':
                 low_roll_type = 2
                 indice += 1
-        while indice < len(arg_string) and arg_string[indice] in string.digits:
+        while indice < len(arg_string) and str.isnumeric(arg_string[indice]):
             low_roll_count = concat_num(low_roll_count)
             indice += 1
         if low_roll_type != 0 and low_roll_count == 0:
@@ -185,7 +179,7 @@ class rollStuff(commands.Cog):
         last_comp = len(arg_string)
         comp = ''
         has_equals = False
-        while indice < len(arg_string) and arg_string[indice] in ['>', '<']:
+        while indice < len(arg_string) and arg_string[indice] in '<>':
             char = arg_string[indice]
             # count gt symbols
             if comp == '' and (char == '>' or char == '<'):
@@ -195,7 +189,7 @@ class rollStuff(commands.Cog):
             elif comp != '' and comp == char:
                 last_comp = indice
                 comp_count += 1
-            elif comp != char and comp != '' and char not in string.digits and char != '=':
+            elif comp != char and comp != '' and not str.isnumeric(char) and char != '=':
                 return failure
             indice += 1
         if last_comp + 1 < len(arg_string) and arg_string[last_comp+1] == '=':
@@ -204,11 +198,11 @@ class rollStuff(commands.Cog):
         else:
             indice = last_comp + 1
         thresh = 0
-        while indice < len(arg_string) and arg_string[indice] in string.digits:
+        while indice < len(arg_string) and str.isnumeric(arg_string[indice]):
             # get threshold for gt
             thresh = concat_num(thresh)
             indice += 1
-        if indice < len(arg_string) and arg_string[indice] not in string.digits:
+        if indice < len(arg_string) and not str.isnumeric(arg_string[indice]):
             return failure
         if (comp_count >= 3):
             return failure
@@ -234,10 +228,7 @@ class rollStuff(commands.Cog):
 @bot.command(name='flip')
 async def flip(ctx):
     # flips a virtual coin
-    if (random.randint(1, 2) == 1):
-        await ctx.send("Tails!")
-    else:
-        await ctx.send("Heads!")
+    await ctx.send(random.choice(["Heads!", "Tails!"]))
 
 @bot.command(name='help')
 async def help(ctx):
