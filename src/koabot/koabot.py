@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 #keep_alive()
 TOKEN = os.getenv('DISCORD_TOKEN')
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='!', case_insensitive=True)
 bot.remove_command("help")
 
 
